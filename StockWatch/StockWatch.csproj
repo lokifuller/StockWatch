@@ -130,5 +130,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Above SMA\Increase Above SMA.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Below SMA\Increase Below SMA.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

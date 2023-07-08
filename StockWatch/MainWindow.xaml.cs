@@ -3,12 +3,14 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace StockPricesApp
 {
@@ -16,11 +18,20 @@ namespace StockPricesApp
     {
         private bool isDragging = false;
         private Point offset;
-
+        private const string StorageFilePath = "stock.txt"; // File path for storing the stock symbol
+        private const string ConfigFilePath = "config.json"; // File path for storing the window position
+        private bool isRSIEnabled = false; // Flag to track the RSI checkbox state
+        private bool isSMAEnabled = false; // Flag to track the SMA checkbox state
         class StockPrice
         {
             public string datetime { get; set; }
             public decimal close { get; set; }
+        }
+
+        class WindowConfig
+        {
+            public double Left { get; set; }
+            public double Top { get; set; }
         }
 
         public MainWindow()
@@ -29,7 +40,28 @@ namespace StockPricesApp
             WindowStyle = WindowStyle.None; // Remove the window border and title bar
             AllowsTransparency = true; // Allow transparency
             Background = Brushes.Transparent; // Set the background color to transparent
+
+            // Load the last stock symbol from storage, if available
+            if (File.Exists(StorageFilePath))
+            {
+                string symbol = File.ReadAllText(StorageFilePath);
+                TickerTextBox.Text = symbol;
+                _ = LoadStockPricesForSymbolAsync(symbol);
+            }
+
+            // Initialize the RSI checkbox state
+            isRSIEnabled = false;
+
+            // Load the window position from configuration
+            if (File.Exists(ConfigFilePath))
+            {
+                string configJson = File.ReadAllText(ConfigFilePath);
+                WindowConfig config = JsonConvert.DeserializeObject<WindowConfig>(configJson);
+                Left = config.Left;
+                Top = config.Top;
+            }
         }
+
         private async Task LoadStockPricesForSymbolAsync(string symbol)
         {
             var client = new RestClient("https://twelve-data1.p.rapidapi.com/stocks?exchange=NASDAQ&format=json");
@@ -58,39 +90,67 @@ namespace StockPricesApp
                         Foreground = Brushes.Black
                     };
 
-                    // Calculate RSI
-                    decimal[] closePrices = stockPrices.Select(p => p.close).Reverse().ToArray();
-                    decimal[] priceChanges = new decimal[closePrices.Length - 1];
-                    for (int i = 0; i < priceChanges.Length; i++)
+                    if (isRSIEnabled)
                     {
-                        priceChanges[i] = closePrices[i + 1] - closePrices[i];
+                        // Calculate RSI
+                        decimal[] closePrices = stockPrices.Select(p => p.close).Reverse().ToArray();
+                        decimal[] priceChanges = new decimal[closePrices.Length - 1];
+                        for (int i = 0; i < priceChanges.Length; i++)
+                        {
+                            priceChanges[i] = closePrices[i + 1] - closePrices[i];
+                        }
+
+                        decimal[] gains = priceChanges.Where(p => p > 0).ToArray();
+                        decimal[] losses = priceChanges.Where(p => p < 0).ToArray();
+
+                        decimal averageGain = gains.Take(10).Average();
+                        decimal averageLoss = Math.Abs(losses.Take(10).Average());
+
+                        decimal smoothingFactor = 2m / (10m + 1m); // EMA smoothing factor
+
+                        for (int i = 10; i < priceChanges.Length; i++)
+                        {
+                            decimal currentGain = priceChanges[i] > 0 ? priceChanges[i] : 0;
+                            decimal currentLoss = Math.Abs(priceChanges[i] < 0 ? priceChanges[i] : 0);
+
+                            averageGain = (currentGain * smoothingFactor) + (averageGain * (1m - smoothingFactor));
+                            averageLoss = (currentLoss * smoothingFactor) + (averageLoss * (1m - smoothingFactor));
+                        }
+
+                        decimal relativeStrength = averageGain / averageLoss;
+                        decimal rsi = 100m - (100m / (1m + relativeStrength));
+
+                        // Display RSI
+                        TextBlock rsiTextBlock = new TextBlock
+                        {
+                            Text = $"RSI for {symbol}: {rsi.ToString("0.00")}",
+                            Foreground = Brushes.Purple
+                        };
+                        StockPricesListBox.Items.Add(rsiTextBlock);
                     }
 
-                    decimal[] gains = priceChanges.Where(p => p > 0).ToArray();
-                    decimal[] losses = priceChanges.Where(p => p < 0).ToArray();
-
-                    decimal averageGain = gains.Take(10).Sum() / 10;
-                    decimal averageLoss = Math.Abs(losses.Take(10).Sum()) / 10;
-
-                    for (int i = 10; i < priceChanges.Length; i++)
+                    if (isSMAEnabled)
                     {
-                        decimal currentGain = priceChanges[i] > 0 ? priceChanges[i] : 0;
-                        decimal currentLoss = Math.Abs(priceChanges[i] < 0 ? priceChanges[i] : 0);
+                        decimal[] closePrices = stockPrices.Select(p => p.close).Reverse().ToArray();
 
-                        averageGain = (averageGain * 9 + currentGain) / 10;
-                        averageLoss = (averageLoss * 9 + currentLoss) / 10;
+                        decimal sum = 0;
+                        int periodLength = Math.Min(closePrices.Length, 9); // Adjust period length based on available prices
+
+                        for (int i = 0; i < periodLength; i++)
+                        {
+                            sum += closePrices[i];
+                        }
+
+                        decimal sma = sum / periodLength;
+
+                        // Display SMA
+                        TextBlock smaTextBlock = new TextBlock
+                        {
+                            Text = $"SMA for {symbol}: {sma.ToString("0.00")}",
+                            Foreground = Brushes.Blue
+                        };
+                        StockPricesListBox.Items.Add(smaTextBlock);
                     }
-
-                    decimal relativeStrength = averageGain / averageLoss;
-                    decimal rsi = 100 - (100 / (1 + relativeStrength));
-
-                    // Display RSI
-                    TextBlock rsiTextBlock = new TextBlock
-                    {
-                        Text = $"RSI for {symbol}: {rsi.ToString("0.00")}",
-                        Foreground = Brushes.Purple
-                    };
-                    StockPricesListBox.Items.Add(rsiTextBlock);
 
                     for (int i = 0; i < stockPrices.Count - 1; i += 1)
                     {
@@ -111,6 +171,9 @@ namespace StockPricesApp
                     }
                 }
             }
+
+            // Save the current stock symbol to storage
+            File.WriteAllText(StorageFilePath, symbol);
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -126,6 +189,11 @@ namespace StockPricesApp
             // Set isDragging to false and release the mouse capture
             isDragging = false;
             ((UIElement)sender).ReleaseMouseCapture();
+
+            // Save the window position to configuration
+            WindowConfig config = new WindowConfig { Left = Left, Top = Top };
+            string configJson = JsonConvert.SerializeObject(config);
+            File.WriteAllText(ConfigFilePath, configJson);
         }
 
         private void Border_MouseMove(object sender, MouseEventArgs e)
@@ -158,6 +226,48 @@ namespace StockPricesApp
                 string symbol = TickerTextBox.Text.Trim().ToUpper();
                 await LoadStockPricesForSymbolAsync(symbol);
             }
+        }
+
+        private async void SMACheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            isSMAEnabled = true; // Set the flag to indicate that SMA is enabled
+            string symbol = TickerTextBox.Text.Trim().ToUpper();
+            await LoadStockPricesForSymbolAsync(symbol);
+        }
+
+        private async void SMACheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            isSMAEnabled = false;
+            string symbol = TickerTextBox.Text.Trim().ToUpper();
+            await LoadStockPricesForSymbolAsync(symbol);
+        }
+        private async void RSICheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            isRSIEnabled = true; // Set the flag to indicate that RSI is enabled
+            string symbol = TickerTextBox.Text.Trim().ToUpper();
+            await LoadStockPricesForSymbolAsync(symbol);
+        }
+
+        private async void RSICheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            isRSIEnabled = false;
+            string symbol = TickerTextBox.Text.Trim().ToUpper();
+            await LoadStockPricesForSymbolAsync(symbol);
+        }
+
+        private void ExtensionsToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExtensionsPopup.IsOpen = !ExtensionsPopup.IsOpen;
+        }
+
+        private void ExtensionsPopup_Opened(object sender, EventArgs e)
+        {
+            ExtensionsToggleButton.IsEnabled = false;
+        }
+
+        private void ExtensionsPopup_Closed(object sender, EventArgs e)
+        {
+            ExtensionsToggleButton.IsEnabled = true;
         }
     }
 }
