@@ -154,41 +154,53 @@ namespace StockPricesApp
 
         private void CalculateAndDisplayRSI(string symbol, List<StockPrice> stockPrices)
         {
+            int periodLength = Math.Min(stockPrices.Count, 10); // Using 10-day period as requested
             decimal[] closePrices = stockPrices.Select(p => p.close).Reverse().ToArray();
-            decimal[] priceChanges = new decimal[closePrices.Length - 1];
 
-            for (int i = 0; i < priceChanges.Length; i++)
+            double[] positiveChanges = new double[closePrices.Length];
+            double[] negativeChanges = new double[closePrices.Length];
+            double[] averageGain = new double[closePrices.Length];
+            double[] averageLoss = new double[closePrices.Length];
+            double[] rsi = new double[closePrices.Length];
+
+            for (int i = 1; i < closePrices.Length; i++)
             {
-                priceChanges[i] = closePrices[i + 1] - closePrices[i];
+                decimal priceDiff = closePrices[i] - closePrices[i - 1];
+
+                if (priceDiff > 0)
+                    positiveChanges[i] = (double)priceDiff;
+                else
+                    negativeChanges[i] = Math.Abs((double)priceDiff);
             }
 
-            decimal[] gains = priceChanges.Where(p => p > 0).ToArray();
-            decimal[] losses = priceChanges.Where(p => p < 0).ToArray();
-
-            decimal averageGain = gains.Take(10).Average();
-            decimal averageLoss = Math.Abs(losses.Take(10).Average());
-
-            decimal smoothingFactor = 2m / (10m + 1m);
-
-            for (int i = 10; i < priceChanges.Length; i++)
+            for (int i = periodLength; i < closePrices.Length; i++)
             {
-                decimal currentGain = priceChanges[i] > 0 ? priceChanges[i] : 0;
-                decimal currentLoss = Math.Abs(priceChanges[i] < 0 ? priceChanges[i] : 0);
+                double gainSum = 0.0;
+                double lossSum = 0.0;
 
-                averageGain = (currentGain * smoothingFactor) + (averageGain * (1m - smoothingFactor));
-                averageLoss = (currentLoss * smoothingFactor) + (averageLoss * (1m - smoothingFactor));
+                for (int x = i - periodLength + 1; x <= i; x++)
+                {
+                    gainSum += positiveChanges[x];
+                    lossSum += negativeChanges[x];
+                }
+
+                averageGain[i] = gainSum / periodLength;
+                averageLoss[i] = lossSum / periodLength;
+
+                double rs = averageGain[i] / (averageLoss[i] == 0 ? 1 : averageLoss[i]);
+                rsi[i] = 100 - (100 / (1 + rs));
             }
 
-            decimal relativeStrength = averageGain / averageLoss;
-            decimal rsi = 100m - (100m / (1m + relativeStrength));
-
-            TextBlock rsiTextBlock = new TextBlock
+            for (int i = periodLength; i < closePrices.Length; i++)
             {
-                Text = $"RSI for {symbol}: {rsi.ToString("0.00")}",
-                Foreground = Brushes.Purple
-            };
+                TextBlock rsiTextBlock = new TextBlock
+                {
+                    Text = $"RSI for {symbol}: {rsi[i].ToString("0.00")}",
+                    Foreground = Brushes.DarkOrange
+                };
 
-            StockPricesListBox.Items.Add(rsiTextBlock);
+                StockPricesListBox.Items.Add(rsiTextBlock);
+            }
         }
 
         private void CalculateAndDisplaySMA(string symbol, List<StockPrice> stockPrices)
