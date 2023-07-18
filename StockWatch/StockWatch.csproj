@@ -90,6 +90,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AppDataSaver.cs" />
+    <Compile Include="ExtensionsManager.cs" />
+    <Compile Include="RSICalculator.cs" />
+    <Compile Include="SMACalculator.cs" />
+    <Compile Include="StockPrice.cs" />
+    <Compile Include="StockPriceEntryHandlers.cs" />
+    <Compile Include="StockPriceLoader.cs" />
+    <Compile Include="StockPricesDisplayer.cs" />
+    <Compile Include="WindowButtonHandlers.cs" />
+    <Compile Include="WindowConfig.cs" />
+    <Compile Include="WindowDragHandler.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

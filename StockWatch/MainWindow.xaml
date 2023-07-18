@@ -4,7 +4,7 @@
         Title="Stock Prices App" Height="396" Width="270"
         WindowStyle="None"
         AllowsTransparency="True"
-        Background="{x:Null}">
+        Background="#02000000">
 
     <Grid>
         <Grid.RowDefinitions>
