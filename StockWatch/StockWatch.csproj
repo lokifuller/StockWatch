@@ -94,7 +94,7 @@
     <Compile Include="ExtensionsManager.cs" />
     <Compile Include="RSICalculator.cs" />
     <Compile Include="SMACalculator.cs" />
-    <Compile Include="StockPrice.cs" />
+    <Compile Include="GatherStockPrice.cs" />
     <Compile Include="StockPriceEntryHandlers.cs" />
     <Compile Include="StockPriceLoader.cs" />
     <Compile Include="StockPricesDisplayer.cs" />
