@@ -10,7 +10,7 @@ namespace StockPricesApp
 {
     public partial class MainWindow : Window
     {
-        private void CalculateAndDisplaySMA(string symbol, List<StockPrice> stockPrices)
+        private void CalculateAndDisplaySMA(string symbol, List<GatherStockPrice> stockPrices)
         {
             decimal[] closePrices = stockPrices.Select(p => p.close).Reverse().ToArray();
             decimal sum = 0;

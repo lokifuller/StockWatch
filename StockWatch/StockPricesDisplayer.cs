@@ -9,12 +9,12 @@ namespace StockPricesApp
 {
     public partial class MainWindow : Window
     {
-        private void DisplayStockPrices(string symbol, List<StockPrice> stockPrices)
+        private void DisplayStockPrices(string symbol, List<GatherStockPrice> stockPrices)
         {
             for (int i = 0; i < stockPrices.Count - 1; i += 1)
             {
-                StockPrice price = stockPrices[i];
-                StockPrice nextPrice = stockPrices[i + 1];
+                GatherStockPrice price = stockPrices[i];
+                GatherStockPrice nextPrice = stockPrices[i + 1];
 
                 DateTime dateTime = DateTime.ParseExact(price.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
@@ -32,7 +32,7 @@ namespace StockPricesApp
             }
         }
 
-        private ContextMenu CreateContextMenu(string symbol, StockPrice stockPrice)
+        private ContextMenu CreateContextMenu(string symbol, GatherStockPrice stockPrice)
         {
             ContextMenu contextMenu = new ContextMenu();
 

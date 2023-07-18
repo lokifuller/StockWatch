@@ -9,7 +9,7 @@ namespace StockPricesApp
 {
     public partial class MainWindow : Window
     {
-        private void CalculateAndDisplayRSI(string symbol, List<StockPrice> stockPrices)
+        private void CalculateAndDisplayRSI(string symbol, List<GatherStockPrice> stockPrices)
         {
             int periodLength = Math.Min(stockPrices.Count, 10);
             decimal[] closePrices = stockPrices.Select(p => p.close).Reverse().ToArray();

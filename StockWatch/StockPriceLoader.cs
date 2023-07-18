@@ -32,7 +32,7 @@ namespace StockPricesApp
                 var prices = jsonData?.values;
                 if (prices != null)
                 {
-                    List<StockPrice> stockPrices = JsonConvert.DeserializeObject<List<StockPrice>>(prices.ToString());
+                    List<GatherStockPrice> stockPrices = JsonConvert.DeserializeObject<List<GatherStockPrice>>(prices.ToString());
 
                     StockPricesListBox.Items.Clear();
 
