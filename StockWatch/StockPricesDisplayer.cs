@@ -18,11 +18,16 @@ namespace StockPricesApp
 
                 DateTime dateTime = DateTime.ParseExact(price.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-                Brush priceColor = nextPrice.close < price.close ? Brushes.Green : Brushes.Red;
+                decimal priceChange = nextPrice.close - price.close;
+                double percentageChange = (double)(priceChange / price.close) * 100;
+
+                string changeSymbol = priceChange > 0 ? "-" : "+"; 
+
+                Brush priceColor = priceChange > 0 ? Brushes.Red : Brushes.Green;
 
                 TextBlock textBlock = new TextBlock
                 {
-                    Text = $"Stock price for {symbol} on {price.datetime}: {price.close}",
+                    Text = $"Stock price for {symbol} on {price.datetime}: {price.close} ({changeSymbol}{Math.Abs(percentageChange):F2}%)",
                     Foreground = priceColor
                 };
 

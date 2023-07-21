@@ -1,7 +1,7 @@
 ﻿<Window x:Class="StockPricesApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Stock Prices App" Height="396" Width="270"
+        Title="Stock Prices App" Height="396" Width="318"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="#02000000">
