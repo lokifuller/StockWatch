@@ -25,7 +25,7 @@ namespace StockPricesApp
 
             string imageName = "";
 
-            if (stockPrices.Last().close <= sma)
+            if (stockPrices.First().close >= sma)
             {
                 imageName = "Above SMA/Above SMA.png";
             }
