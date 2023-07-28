@@ -14,7 +14,7 @@ namespace StockPricesApp
 {
     public partial class MainWindow : Window
     {
-        private async Task LoadStockPricesForSymbolAsync(string symbol)
+        public async Task LoadStockPricesForSymbolAsync(string symbol)
         {
             var client = new RestClient("https://twelve-data1.p.rapidapi.com/stocks?exchange=NASDAQ&format=json");
             var request = new RestRequest("time_series", Method.Get);

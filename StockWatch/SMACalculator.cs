@@ -42,7 +42,7 @@ namespace StockPricesApp
             TextBlock smaTextBlock = new TextBlock
             {
                 Text = $"SMA for {symbol}: {sma.ToString("0.00")}",
-                Foreground = Brushes.Blue
+                Foreground = Brushes.LightGoldenrodYellow
             };
 
             smaPanel.Children.Add(smaTextBlock);

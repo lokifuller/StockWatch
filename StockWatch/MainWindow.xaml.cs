@@ -28,6 +28,7 @@
 // - SaveCheckboxStatesToConfig: Saves the current window position and checkbox states to a configuration file.
 // - ExtensionsToggleButton_Click, ExtensionsPopup_Opened, ExtensionsPopup_Closed: Event handlers for toggling and managing a popup extension menu.
 
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace StockPricesApp
@@ -38,6 +39,7 @@ namespace StockPricesApp
         private const string ConfigFilePath = "config.json";
         private bool isRSIEnabled = false;
         private bool isSMAEnabled = false;
+        private RealTimeStockUpdater stockUpdater;
 
         public MainWindow()
         {
@@ -45,6 +47,7 @@ namespace StockPricesApp
             ConfigureWindowStyle();
             LoadLastStockSymbol();
             LoadWindowPositionAndCheckboxStates();
+            stockUpdater = new RealTimeStockUpdater(this);
         }
 
         private void ConfigureWindowStyle()

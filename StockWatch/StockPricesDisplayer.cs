@@ -21,7 +21,7 @@ namespace StockPricesApp
                 decimal priceChange = nextPrice.close - price.close;
                 double percentageChange = (double)(priceChange / price.close) * 100;
 
-                string changeSymbol = priceChange > 0 ? "-" : "+"; 
+                string changeSymbol = priceChange > 0 ? "-" : "+";
 
                 Brush priceColor = priceChange > 0 ? Brushes.Red : Brushes.Green;
 
