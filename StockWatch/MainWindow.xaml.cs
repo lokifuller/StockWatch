@@ -39,7 +39,6 @@ namespace StockPricesApp
         private const string ConfigFilePath = "config.json";
         private bool isRSIEnabled = false;
         private bool isSMAEnabled = false;
-        private RealTimeStockUpdater stockUpdater;
 
         public MainWindow()
         {
@@ -47,7 +46,6 @@ namespace StockPricesApp
             ConfigureWindowStyle();
             LoadLastStockSymbol();
             LoadWindowPositionAndCheckboxStates();
-            stockUpdater = new RealTimeStockUpdater(this);
         }
 
         private void ConfigureWindowStyle()

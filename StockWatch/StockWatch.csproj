@@ -109,7 +109,6 @@
     </ApplicationDefinition>
     <Compile Include="AppDataSaver.cs" />
     <Compile Include="ExtensionsManager.cs" />
-    <Compile Include="RealTimeStockUpdater.cs" />
     <Compile Include="RSICalculator.cs" />
     <Compile Include="SMACalculator.cs" />
     <Compile Include="GatherStockPrice.cs" />
