@@ -1,11 +1,11 @@
 ﻿<Window x:Class="StockPricesApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="mainWindow"
         Title="Stock Prices App" Height="396" Width="318"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="#02000000">
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -13,6 +13,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Header Area -->
         <Border Grid.Row="0"
                 Background="#333333"
                 MouseLeftButtonDown="Border_MouseLeftButtonDown"
@@ -20,114 +21,170 @@
                 MouseMove="Border_MouseMove">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <!-- Left area: Extensions Toggle Button -->
                     <ColumnDefinition Width="Auto"/>
+                    <!-- Right area: Minimize, Always On Top (Pin), and Close Buttons -->
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <ToggleButton x:Name="ExtensionsToggleButton"
-                              Width="77"
-                              Margin="5,0,0,0"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              Click="ExtensionsToggleButton_Click">
-                    <ToggleButton.Template>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border Background="{TemplateBinding Background}">
-                                <ContentPresenter Content="Extensions"
-                                                  HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center" />
-                            </Border>
-                        </ControlTemplate>
-                    </ToggleButton.Template>
-                    <ToggleButton.Style>
-                        <Style TargetType="ToggleButton">
-                            <Setter Property="Background" Value="#333333" />
-                            <Setter Property="Foreground" Value="White" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ToggleButton">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter Content="Extensions"
-                                                              HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="Gray" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ToggleButton.Style>
-                </ToggleButton>
+                <!-- Left-Side: Extensions Toggle Button -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <ToggleButton x:Name="ExtensionsToggleButton"
+                                  Width="77"
+                                  Margin="5,0,0,0"
+                                  VerticalAlignment="Center"
+                                  Click="ExtensionsToggleButton_Click">
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter Content="Extensions"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Background" Value="#333333" />
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter Content="Extensions"
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Gray" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+                </StackPanel>
 
-                <Popup x:Name="ExtensionsPopup"
-                       PlacementTarget="{Binding ElementName=ExtensionsToggleButton}"
-                       StaysOpen="False"
-                       IsOpen="False"
-                       Opened="ExtensionsPopup_Opened"
-                       Closed="ExtensionsPopup_Closed">
-                    <Grid Margin="-1">
-                        <Border Background="#333333"
-                                BorderBrush="Gray"
-                                BorderThickness="2">
-                            <StackPanel>
-                                <CheckBox x:Name="RSICheckbox"
-                                          Content="RSI                    "
-                                          IsChecked="{Binding Path=isRSIEnabled, ElementName=mainWindow, Mode=TwoWay}"
-                                          Checked="RSICheckbox_Checked"
-                                          Unchecked="RSICheckbox_Unchecked">
-                                    <CheckBox.Foreground>
-                                        <SolidColorBrush Color="White"/>
-                                    </CheckBox.Foreground>
-                                </CheckBox>
-
-                                <CheckBox x:Name="SMACheckbox"
-                                          Content="SMA                    "
-                                          IsChecked="{Binding Path=isSMAEnabled, ElementName=mainWindow, Mode=TwoWay}"
-                                          Checked="SMACheckbox_Checked"
-                                          Unchecked="SMACheckbox_Unchecked">
-                                    <CheckBox.Foreground>
-                                        <SolidColorBrush Color="White"/>
-                                    </CheckBox.Foreground>
-                                </CheckBox>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Popup>
-
+                <!-- Right-Side: Window Control Buttons -->
                 <StackPanel Grid.Column="1"
                             HorizontalAlignment="Right"
-                            Orientation="Horizontal"
-                            Width="Auto">
+                            Orientation="Horizontal">
+                    
+                    <!-- Always On Top Button -->
+                    <ToggleButton x:Name="AlwaysOnTopToggleButton"
+                                  Width="30"
+                                  Height="30"
+                                  Margin="0,0,5,0"
+                                  VerticalAlignment="Center"
+                                  Checked="AlwaysOnTopToggleButton_Checked"
+                                  Unchecked="AlwaysOnTopToggleButton_Unchecked">
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Border x:Name="toggleBorder"
+                                        Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="1"
+                                        CornerRadius="2">
+                                    <Image x:Name="pinImage"
+                                           Source="Assets/Always On Top/Pin.png"
+                                           Width="20"
+                                           Height="20"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="pinImage" 
+                                                Property="Source" 
+                                                Value="Assets/Always On Top/Pin-pressed.png"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+
+                    <!-- Minimize Button-->
                     <Button x:Name="MinimizeButton"
                             Content="–"
                             Width="30"
                             Height="30"
-                            Margin="0 0 5 0"
+                            Margin="0,0,5,0"
                             Click="MinimizeButton_Click"/>
+
+                    <!-- Close Button -->
                     <Button x:Name="CloseButton"
                             Content="✕"
                             Width="30"
                             Height="30"
                             Click="CloseButton_Click"/>
+                    
                 </StackPanel>
             </Grid>
         </Border>
 
+        <!-- Ticker TextBox and Extensions Popup -->
         <StackPanel Grid.Row="1">
             <TextBox x:Name="TickerTextBox"
                      Margin="10"
                      VerticalAlignment="Top"
-                     KeyUp="TickerTextBox_KeyUp" />
+                     KeyUp="TickerTextBox_KeyUp"/>
+            <Popup x:Name="ExtensionsPopup"
+                   PlacementTarget="{Binding ElementName=ExtensionsToggleButton}"
+                   StaysOpen="False"
+                   IsOpen="False"
+                   Opened="ExtensionsPopup_Opened"
+                   Closed="ExtensionsPopup_Closed">
+                <Grid Margin="-1">
+                    <Border Background="#333333"
+                            BorderBrush="Gray"
+                            BorderThickness="2">
+                        <StackPanel>
+                            <CheckBox x:Name="RSICheckbox"
+                                      Content="RSI                    "
+                                      Checked="RSICheckbox_Checked"
+                                      Unchecked="RSICheckbox_Unchecked">
+                                <CheckBox.Foreground>
+                                    <SolidColorBrush Color="White"/>
+                                </CheckBox.Foreground>
+                            </CheckBox>
+                            <CheckBox x:Name="SMACheckbox"
+                                      Content="SMA                    "
+                                      Checked="SMACheckbox_Checked"
+                                      Unchecked="SMACheckbox_Unchecked">
+                                <CheckBox.Foreground>
+                                    <SolidColorBrush Color="White"/>
+                                </CheckBox.Foreground>
+                            </CheckBox>
+                            <CheckBox x:Name="VolumeCheckbox"
+                                      Content="Volume                "
+                                      Checked="VolumeCheckbox_Checked"
+                                      Unchecked="VolumeCheckbox_Unchecked">
+                                <CheckBox.Foreground>
+                                    <SolidColorBrush Color="White"/>
+                                </CheckBox.Foreground>
+                            </CheckBox>
+                            <CheckBox x:Name="VolumeVsAvgCheckbox"
+                                      Content="Volume Vs Average Volume"
+                                      Checked="VolumeVsAvgCheckbox_Checked"
+                                      Unchecked="VolumeVsAvgCheckbox_Unchecked">
+                                <CheckBox.Foreground>
+                                    <SolidColorBrush Color="White"/>
+                                </CheckBox.Foreground>
+                            </CheckBox>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Popup>
+        </StackPanel>
 
+        <!-- Stock Prices ListBox -->
+        <StackPanel Grid.Row="2">
             <ListBox x:Name="StockPricesListBox"
                      Background="{x:Null}">
                 <ListBox.Style>
                     <Style TargetType="ListBox">
-                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBox">
@@ -137,7 +194,7 @@
                                             Padding="{TemplateBinding Padding}">
                                         <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                                       VerticalScrollBarVisibility="Auto">
-                                            <ItemsPresenter />
+                                            <ItemsPresenter/>
                                         </ScrollViewer>
                                     </Border>
                                 </ControlTemplate>

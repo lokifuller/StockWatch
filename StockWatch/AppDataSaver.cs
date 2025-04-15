@@ -26,10 +26,16 @@ namespace StockPricesApp
                 Top = config.Top;
                 isRSIEnabled = config.IsRSIEnabled;
                 isSMAEnabled = config.IsSMAEnabled;
+                isVolumeEnabled = config.IsVolumeEnabled;
+                isVolumeVsAvgEnabled = config.isVolumeVsAvgEnabled;
+
                 RSICheckbox.IsChecked = isRSIEnabled;
                 SMACheckbox.IsChecked = isSMAEnabled;
+                VolumeCheckbox.IsChecked = isVolumeEnabled;
+                VolumeVsAvgCheckbox.IsChecked = isVolumeVsAvgEnabled;
             }
         }
+
         private void SaveCurrentStockSymbol(string symbol)
         {
             File.WriteAllText(StorageFilePath, symbol);
@@ -42,7 +48,9 @@ namespace StockPricesApp
                 Left = Left,
                 Top = Top,
                 IsRSIEnabled = isRSIEnabled,
-                IsSMAEnabled = isSMAEnabled
+                IsSMAEnabled = isSMAEnabled,
+                IsVolumeEnabled = isVolumeEnabled,
+                isVolumeVsAvgEnabled = isVolumeVsAvgEnabled
             };
 
             string configJson = JsonConvert.SerializeObject(config);
