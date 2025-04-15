@@ -34,25 +34,29 @@ namespace StockPricesApp
                 {
                     List<GatherStockPrice> stockPrices = JsonConvert.DeserializeObject<List<GatherStockPrice>>(prices.ToString());
 
-                        StockPricesListBox.Items.Clear();
+                    StockPricesListBox.Items.Clear();
 
-                    TextBlock paddingText = new TextBlock
+                    if (isRSIEnabled)
                     {
-                        Text = "Padding text block",
-                        Foreground = Brushes.Black
-                    };
+                        CalculateAndDisplayRSI(symbol, stockPrices);
+                    }
 
-                        if (isRSIEnabled)
-                        {
-                            CalculateAndDisplayRSI(symbol, stockPrices);
-                        }
+                    if (isSMAEnabled)
+                    {
+                        CalculateAndDisplaySMA(symbol, stockPrices);
+                    }
 
-                        if (isSMAEnabled)
-                        {
-                            CalculateAndDisplaySMA(symbol, stockPrices);
-                        }
+                    if (isVolumeEnabled)
+                    {
+                        CalculateAndDisplayVolume(symbol, stockPrices);
+                    }
 
-                        DisplayStockPrices(symbol, stockPrices);
+                    if (isVolumeVsAvgEnabled)
+                    {
+                        CalculateAndDisplayVolumeComparison(symbol, stockPrices);
+                    }
+
+                    DisplayStockPrices(symbol, stockPrices);
                 }
             }
 
